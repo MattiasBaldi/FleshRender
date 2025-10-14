@@ -4,15 +4,22 @@ import Experience from "./Experience.tsx";
 import { Ui } from "./Ui.tsx";
 import { Environment } from "@react-three/drei";
 
-function ErrorButton() {
+function ErrorButton({
+  errorMessage,
+  top,
+}: {
+  errorMessage: string;
+  top: string;
+}) {
   return (
     <button
-      className="fixed z-100 top-[50%] bg-red-700 left-[50%] w-fit hover:cursor-pointer p-10 border-1"
+      className="fixed z-100 bg-red-700 left-[50%] w-fit hover:cursor-pointer p-10 border-1"
+      style={{ top: `${top}px` }}
       onClick={() => {
-        throw new Error("This is your first error!");
+        throw new Error(errorMessage);
       }}
     >
-      Break the world
+      {errorMessage}
     </button>
   );
 }
@@ -26,7 +33,14 @@ function App() {
       </Canvas>
       <Ui />
 
-      <ErrorButton />
+      <ErrorButton
+        errorMessage="this is not being blocked by browsers"
+        top="50"
+      />
+      <ErrorButton
+        errorMessage="this is not being blocked by cloudflare"
+        top="75"
+      />
     </>
   );
 }
