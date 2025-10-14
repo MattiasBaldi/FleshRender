@@ -12,7 +12,8 @@ Sentry.init({
   tracesSampleRate: 1.0,
   tracePropagationTargets: [
     "localhost",
-    "https://3da2b5f4.fleshrender.pages.dev/",
+    "fleshrender.pages.dev", // <-- no protocol, no trailing slash
+    /^\/api/, // <-- for same-origin API routes
   ],
 });
 
