@@ -10,7 +10,10 @@ Sentry.init({
   sendDefaultPii: true,
   integrations: [Sentry.browserTracingIntegration()],
   tracesSampleRate: 1.0,
-  tracePropagationTargets: ["localhost"],
+  tracePropagationTargets: [
+    "localhost",
+    "https://3da2b5f4.fleshrender.pages.dev/",
+  ],
 });
 
 createRoot(document.getElementById("root")!).render(
