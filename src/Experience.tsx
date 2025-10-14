@@ -1,103 +1,88 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Canvas } from "@react-three/fiber";
-import {
-  Decal,
-  useTexture,
-  Text,
-  RenderTexture,
-  OrbitControls,
-} from "@react-three/drei";
+import { Decal, useTexture, OrbitControls } from "@react-three/drei"; // prettier-ignore
 import { useControls } from "leva";
+import { useDecal } from "./hooks/useDecal.ts";
+import { useTextureStore } from "./stores/useTextureStore.ts";
+import type { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events.d.ts";
 
-const exampleTexture =
-  "https://threejs.org/examples/textures/uv_grid_opengl.jpg";
+enum Primitives {
+  Cube,
+  Sphere,
+  Cylinder,
+  Cone,
+  Torus,
+  Plane,
+  Dodecahedron,
+  Icosahedron,
+  Octahedron,
+  Tetrahedron,
+  Capsule,
+}
+
+const geometryMap = {
+  [Primitives.Cube]: <boxGeometry />,
+  [Primitives.Sphere]: <sphereGeometry />,
+  [Primitives.Cylinder]: <cylinderGeometry />,
+  [Primitives.Cone]: <coneGeometry />,
+  [Primitives.Torus]: <torusGeometry />,
+  [Primitives.Plane]: <planeGeometry />,
+  [Primitives.Dodecahedron]: <dodecahedronGeometry />,
+  [Primitives.Icosahedron]: <icosahedronGeometry />,
+  [Primitives.Octahedron]: <octahedronGeometry />,
+  [Primitives.Tetrahedron]: <tetrahedronGeometry />,
+  [Primitives.Capsule]: <capsuleGeometry />,
+};
 
 export default function Experience() {
-  const controls = useControls({
-    scale: { value: 1, min: 0, max: 100, step: 0.01 },
-    position: { value: [0, 0, 0], min: -5, max: 5, step: 0.01 },
-    rotation: { value: [0, 0, 0], min: -Math.PI, max: Math.PI, step: 0.01 },
+  const image = useTextureStore((state) => state.texture);
+  const texture = useTexture(image);
+
+  //  Decal stuff
+  const controls = useControls("decal", {
+    scale: {
+      value: { x: 1, y: 2, z: 3 },
+      min: 0,
+      max: 10,
+      step: 0.1,
+    },
+    scaleFactor: { value: 0.05, min: 0, max: 1, step: 0.01 },
+    show: true,
+    debug: false,
+    Primitives: { options: Primitives, value: Primitives.Cube },
   });
 
-  const texture = useTexture(exampleTexture);
-  const decalMesh = useRef(null);
-
-  console.log(decalMesh);
-
-  type MousePosition = {
-    x: number;
-    y: number;
-  };
-
-  const [mousePosition, setMousePosition] = useState<MousePosition>({
-    x: 0,
-    y: 0,
-  });
-
-  const [isPlacingDecal, setIsPlacingDecal] = useState<boolean>(false);
-  const [decalCenter, setDecalCenter] = useState<number>(0);
-  const [decalScale, setDecalScale] = useState<number>(1);
-
-  useEffect(() => {
-    const handleMouseUp = () => {
-      setIsPlacingDecal(false);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isPlacingDecal) {
-      document.body.style.cursor = "grabbing";
-      setDecalScale(
-        Math.abs(mousePosition.x) + Math.abs(mousePosition.y) - decalCenter
-      );
-      console.log(isPlacingDecal);
-      console.log(decalScale);
-      console.log(mousePosition);
-    }
-    if (!isPlacingDecal) document.body.style.cursor = "auto";
-  }, [isPlacingDecal, decalScale, mousePosition, decalCenter]);
+  const {
+    isPlacingDecal,
+    decalPosition,
+    decalRotation,
+    decalScale,
+    handlePointerDown,
+    handlePointerEnter,
+    handlePointerOut,
+  } = useDecal({ scaleFactor: controls.scaleFactor });
 
   return (
     <>
       {!isPlacingDecal ? <OrbitControls /> : null}
       <mesh
-        ref={decalMesh}
-        onPointerOver={() => {
-          console.log("Hovered!");
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerDown={(e: React.PointerEvent) => {
-          setDecalCenter(Math.abs(e.clientX) + Math.abs(e.clientY));
-          setIsPlacingDecal(true);
-        }}
-        onPointerUp={() => setIsPlacingDecal(false)}
+        onPointerEnter={handlePointerEnter}
+        onPointerOut={handlePointerOut}
+        onPointerDown={(e: ThreeEvent<PointerEvent>) => handlePointerDown(e)} /* prettier-ignore */
       >
-        <sphereGeometry />
+        {geometryMap[controls.Primitives as Primitives]}
         <meshBasicMaterial />
 
-        {isPlacingDecal ? (
+        {isPlacingDecal || controls.show ? (
           <Decal
             scale={decalScale}
-            position={controls.position}
-            rotation={controls.rotation}
-            debug
+            position={[decalPosition.x, decalPosition.y, decalPosition.z]}
+            rotation={[decalRotation.x, decalRotation.y, decalRotation.z]}
+            debug={controls.debug}
           >
-            <meshBasicMaterial
+            <meshStandardMaterial
               map={texture}
+              transparent={true}
               polygonOffset
-              polygonOffsetFactor={-1} // The material should take precedence over the original
+              polygonOffsetFactor={-1}
             />
           </Decal>
         ) : null}
