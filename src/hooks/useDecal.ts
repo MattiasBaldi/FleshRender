@@ -36,7 +36,7 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
   const [isPointerOver, setIsPointerOver] = useState<boolean>(false);
 
   // decal
-  const [isPlacingDecal, setIsPlacingDecal] = useState<boolean>(false);
+  const [isDecalPlacing, setIsDecalPlacing] = useState<boolean>(false);
   const [decalCenter, setDecalCenter] = useState<number>(0);
   const [decalScale, setDecalScale] = useState<number>(filter.decal.scale);
   const [decalPosition, setDecalPosition] = useState<DecalVector>(filter.decal.position) // prettier-ignore
@@ -46,28 +46,28 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
     (e: ThreeEvent<PointerEvent>) => {
       console.log("object", e);
       setDecalCenter(Math.abs(e.clientX) + Math.abs(e.clientY));
-      setIsPlacingDecal(true);
+      setIsDecalPlacing(true);
       setDecalPosition(e.point);
-      if (isPlacingDecal && e.normal) setDecalRotation(e.normal);
+      if (isDecalPlacing && e.normal) setDecalRotation(e.normal);
 
       setCursorStyle(CursorStyle.grabbing);
     },
-    [isPlacingDecal]
+    [isDecalPlacing]
   );
 
   const handlePointerEnter = useCallback(() => {
     setIsPointerOver(true);
-    if (!isPlacingDecal) setCursorStyle(CursorStyle.pointer);
-  }, [isPlacingDecal]);
+    if (!isDecalPlacing) setCursorStyle(CursorStyle.pointer);
+  }, [isDecalPlacing]);
 
   const handlePointerOut = useCallback(() => {
     setIsPointerOver(false);
-    if (!isPlacingDecal) setCursorStyle(CursorStyle.auto);
-  }, [isPlacingDecal]);
+    if (!isDecalPlacing) setCursorStyle(CursorStyle.auto);
+  }, [isDecalPlacing]);
 
   useEffect(() => {
     const handleMouseUp = () => {
-      setIsPlacingDecal(false);
+      setIsDecalPlacing(false);
       if (isPointerOver) {
         setCursorStyle(CursorStyle.pointer);
       } else {
@@ -76,7 +76,7 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (isPlacingDecal) setMousePosition({ x: e.clientX, y: e.clientY });
+      if (isDecalPlacing) setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
     window.addEventListener("mouseup", handleMouseUp);
@@ -86,13 +86,13 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [isPlacingDecal, handlePointerOut, handlePointerEnter, isPointerOver]);
+  }, [isDecalPlacing, handlePointerOut, handlePointerEnter, isPointerOver]);
 
   //   Decal Scale
   useEffect(() => {
-    if (isPlacingDecal) 
+    if (isDecalPlacing) 
       setDecalScale( Math.abs((mousePosition.x) + Math.abs(mousePosition.y) - decalCenter) * scaleFactor); // prettier-ignore
-  }, [isPlacingDecal, mousePosition, decalCenter, scaleFactor]);
+  }, [isDecalPlacing, mousePosition, decalCenter, scaleFactor]);
 
   //   Cursor style
   useEffect(() => {
@@ -101,7 +101,7 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
   }, [cursorStyle]);
 
   return {
-    isPlacingDecal,
+    isDecalPlacing,
     decalPosition,
     decalRotation,
     decalScale,
