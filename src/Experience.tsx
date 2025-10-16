@@ -9,40 +9,19 @@ import { CustomDecal } from "./components/CustomDecal.tsx";
 import { useDebugLaser } from "./hooks/useDebugLaser.ts";
 import { useGLTF } from "@react-three/drei";
 
-enum Primitives {
-  Cube,
-  Sphere,
-  Cylinder,
-  Cone,
-  Torus,
-  Plane,
-  Dodecahedron,
-  Icosahedron,
-  Octahedron,
-  Tetrahedron,
-  Capsule,
+enum Models {
+  male = "male",
+  female = "female",
 }
 
-const geometryMap = {
-  [Primitives.Cube]: <boxGeometry />,
-  [Primitives.Sphere]: <sphereGeometry />,
-  [Primitives.Cylinder]: <cylinderGeometry />,
-  [Primitives.Cone]: <coneGeometry />,
-  [Primitives.Torus]: <torusGeometry />,
-  [Primitives.Plane]: <planeGeometry />,
-  [Primitives.Dodecahedron]: <dodecahedronGeometry />,
-  [Primitives.Icosahedron]: <icosahedronGeometry />,
-  [Primitives.Octahedron]: <octahedronGeometry />,
-  [Primitives.Tetrahedron]: <tetrahedronGeometry />,
-  [Primitives.Capsule]: <capsuleGeometry />,
-};
-
 export default function Experience() {
+  const { nodes } = useGLTF("./files/models.glb");
+
   //  Controls
   const controls = useControls("mesh", {
     scaleFactor: { value: 0.05, min: 0, max: 1, step: 0.01 },
     showMesh: true,
-    Primitives: { options: Primitives, value: Primitives.Cube },
+    Models: { options: Models, value: Models.male },
   });
 
   // Decal
@@ -95,9 +74,9 @@ export default function Experience() {
           setRayDirection(e.ray.direction);
           setRayOrigin(e.ray.origin);
       }} /* prettier-ignore */
+          geometry={nodes[controls.Models].geometry}
+          material={nodes[controls.Models].material}
         >
-          {geometryMap[controls.Primitives as Primitives]}
-          <meshBasicMaterial />
           <CustomDecal
             scale={filter.decal.scale}
             position={filter.decal.position}

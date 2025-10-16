@@ -1,7 +1,7 @@
 import React from "react";
 import { useDecal } from "../hooks/useDecal.ts";
 import { Decal, useTexture, OrbitControls } from "@react-three/drei"; // prettier-ignore
-import { useTextureStore } from "../stores/useTextureStore.ts";
+import { useUiStore } from "../stores/useUiStore.ts";
 import { useControls } from "leva";
 import type { DecalVector } from "../hooks/useDecal.ts";
 
@@ -12,7 +12,7 @@ export type DecalProps = {
 };
 
 export function CustomDecal(props: DecalProps) {
-  const image = useTextureStore((state) => state.texture);
+  const image = useUiStore((state) => state.texture);
   const texture = useTexture(image);
 
   const controls = useControls("decal", {

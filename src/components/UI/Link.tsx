@@ -1,3 +1,4 @@
+import { MdContentCopy } from "react-icons/md";
 import { useFilter } from "../../hooks/useFilter";
 
 export function Link() {
@@ -6,12 +7,12 @@ export function Link() {
 
   return (
     <div className="flex gap-10">
-      <a className="w-100 italic truncate">{shareUrl}</a>
+      <a className="w-45 italic truncate">{shareUrl}</a>
       <button
         onClick={() => navigator.clipboard.writeText(shareUrl)}
         className="cursor-pointer"
       >
-        share
+        <MdContentCopy size={20} />
       </button>
     </div>
   );

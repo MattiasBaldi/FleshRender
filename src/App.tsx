@@ -6,7 +6,11 @@ import { Environment } from "@react-three/drei";
 function App() {
   return (
     <>
-      <Canvas style={{ width: "100vw", height: "100vh" }}>
+      <Canvas
+        className="webgl"
+        gl={{ preserveDrawingBuffer: true }}
+        style={{ width: "100vw", height: "100vh" }}
+      >
         <Experience />
         <Environment preset="city" />
       </Canvas>

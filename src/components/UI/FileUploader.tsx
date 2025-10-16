@@ -1,8 +1,8 @@
-import { useTextureStore } from "../../stores/useTextureStore.ts";
+import { useUiStore } from "../../stores/useUiStore.ts";
 
 export function FileUploader() {
-  const texture = useTextureStore((state) => state.texture);
-  const setTexture = useTextureStore((state) => state.setTexture);
+  const texture = useUiStore((state) => state.texture);
+  const setTexture = useUiStore((state) => state.setTexture);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event?.target.files?.[0];
