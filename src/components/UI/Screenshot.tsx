@@ -1,8 +1,4 @@
-import { useState } from "react";
-import { useUiStore } from "../../stores/useUiStore";
-
 export function Screenshot() {
-  const [imgSrc, setImgSrc] = useState<string | null>(null);
   const captureScreenShot = () => {
     const canvas = document.querySelector(".webgl canvas");
     if (canvas && canvas instanceof HTMLCanvasElement) {
@@ -31,10 +27,6 @@ export function Screenshot() {
           📸
         </span>
       </button>
-      <img
-        className="fixed top-1/2 left-1/2 w-fit h-fit z-50 transform -translate-x-1/2 -translate-y-1/2"
-        src={imgSrc}
-      ></img>
     </>
   );
 }

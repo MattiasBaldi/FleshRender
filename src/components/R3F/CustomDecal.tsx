@@ -1,8 +1,6 @@
-import React from "react";
-import { useDecal } from "../../hooks/useDecal.ts";
-import { Decal, useTexture, OrbitControls } from "@react-three/drei"; // prettier-ignore
+import { Decal, useTexture } from "@react-three/drei"; // prettier-ignore
 import { useUiStore } from "../../stores/useUiStore.ts";
-import { useControls, folder } from "leva";
+import { useControls } from "leva";
 import type { DecalVector } from "../../hooks/useDecal.ts";
 
 export type DecalProps = {

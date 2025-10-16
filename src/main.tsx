@@ -33,9 +33,10 @@ Sentry.init({
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary fallback={<p>Something went wrong</p>}>
-    {/* <StrictMode>    </StrictMode> */}
-    <NuqsAdapter>
-      <App />
-    </NuqsAdapter>
+    <StrictMode>
+      <NuqsAdapter>
+        <App />
+      </NuqsAdapter>
+    </StrictMode>
   </ErrorBoundary>
 );

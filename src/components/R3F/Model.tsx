@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { CustomDecal } from "./CustomDecal.tsx";
 import { useGLTF } from "@react-three/drei";
 import { useDecal } from "../../hooks/useDecal.ts";
-import { useDecalsStore } from "../../stores/useDecalsStore.ts";
 
 export enum Models {
   male = "male",
@@ -24,8 +23,6 @@ export function Model() {
   const decalControls = useControls("decals", {
     scaleFactor: { value: 0.05, min: 0, max: 1, step: 0.01 },
   });
-
-  // const {setIsDecalPlacing, scaleFactor, setScaleFactor} = useDecalsStore((state) => state.isDecalPlacing)
 
   // Decal
   const {
