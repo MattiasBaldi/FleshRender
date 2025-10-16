@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import * as Sentry from "@sentry/react";
 import { ErrorBoundary } from "@sentry/react";
+import { NuqsAdapter } from "nuqs/adapters/react";
 
 Sentry.init({
   dsn: "https://26cfc144bc373797ce0fdf01b0945ad0@o4510067874398208.ingest.de.sentry.io/4510188646629456",
@@ -32,8 +33,9 @@ Sentry.init({
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary fallback={<p>Something went wrong</p>}>
-    <StrictMode>
+    {/* <StrictMode>    </StrictMode> */}
+    <NuqsAdapter>
       <App />
-    </StrictMode>
+    </NuqsAdapter>
   </ErrorBoundary>
 );

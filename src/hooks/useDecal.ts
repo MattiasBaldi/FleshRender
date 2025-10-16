@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events.d.ts";
+import { useFilter } from "./useFilter";
 
 export type MousePosition = {
   x: number;
@@ -28,6 +29,8 @@ export type UseDecalProps = {
 // const camera
 
 export function useDecal({ scaleFactor }: UseDecalProps) {
+  const { filter } = useFilter();
+
   const [mousePosition, setMousePosition] = useState<MousePosition>({x: 0, y: 0 }); // prettier-ignore
   const [cursorStyle, setCursorStyle] = useState<CursorStyle>(CursorStyle.auto);
   const [isPointerOver, setIsPointerOver] = useState<boolean>(false);
@@ -35,16 +38,18 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
   // decal
   const [isPlacingDecal, setIsPlacingDecal] = useState<boolean>(false);
   const [decalCenter, setDecalCenter] = useState<number>(0);
-  const [decalScale, setDecalScale] = useState<number>(1);
-  const [decalPosition, setDecalPosition] = useState<DecalVector>({x: 0, y: 0, z: 0}) // prettier-ignore
+  const [decalScale, setDecalScale] = useState<number>(filter.decal.scale);
+  const [decalPosition, setDecalPosition] = useState<DecalVector>(filter.decal.position) // prettier-ignore
   const [decalRotation, setDecalRotation] = useState<DecalVector>({x: 0, y: 0, z: 0}) // prettier-ignore
 
   const handlePointerDown = useCallback(
     (e: ThreeEvent<PointerEvent>) => {
+      console.log("object", e);
       setDecalCenter(Math.abs(e.clientX) + Math.abs(e.clientY));
       setIsPlacingDecal(true);
       setDecalPosition(e.point);
-      if (isPlacingDecal) setDecalRotation(e.ray.direction);
+      if (isPlacingDecal && e.normal) setDecalRotation(e.normal);
+
       setCursorStyle(CursorStyle.grabbing);
     },
     [isPlacingDecal]
@@ -71,7 +76,7 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (isPlacingDecal) setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
     window.addEventListener("mouseup", handleMouseUp);
@@ -81,7 +86,7 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [handlePointerOut, handlePointerEnter, isPointerOver]);
+  }, [isPlacingDecal, handlePointerOut, handlePointerEnter, isPointerOver]);
 
   //   Decal Scale
   useEffect(() => {
@@ -100,6 +105,8 @@ export function useDecal({ scaleFactor }: UseDecalProps) {
     decalPosition,
     decalRotation,
     decalScale,
+    setDecalScale,
+    setDecalPosition,
     handlePointerDown,
     handlePointerEnter,
     handlePointerOut,

@@ -1,8 +1,13 @@
-import { Decal, useTexture, OrbitControls } from "@react-three/drei"; // prettier-ignore
+import { OrbitControls } from "@react-three/drei"; // prettier-ignore
 import { useControls } from "leva";
 import { useDecal } from "./hooks/useDecal.ts";
-import { useTextureStore } from "./stores/useTextureStore.ts";
 import type { ThreeEvent } from "@react-three/fiber/dist/declarations/src/core/events.d.ts";
+import DebugLaser from "./components/DebugLaser.tsx";
+import { useFilter } from "./hooks/useFilter.ts";
+import { useEffect } from "react";
+import { CustomDecal } from "./components/CustomDecal.tsx";
+import { useDebugLaser } from "./hooks/useDebugLaser.ts";
+import { useGLTF } from "@react-three/drei";
 
 enum Primitives {
   Cube,
@@ -33,60 +38,72 @@ const geometryMap = {
 };
 
 export default function Experience() {
-  const image = useTextureStore((state) => state.texture);
-  const texture = useTexture(image);
-
-  //  Decal stuff
-  const controls = useControls("decal", {
-    scale: {
-      value: { x: 1, y: 2, z: 3 },
-      min: 0,
-      max: 10,
-      step: 0.1,
-    },
+  //  Controls
+  const controls = useControls("mesh", {
     scaleFactor: { value: 0.05, min: 0, max: 1, step: 0.01 },
-    show: true,
-    debug: false,
+    showMesh: true,
     Primitives: { options: Primitives, value: Primitives.Cube },
   });
 
+  // Decal
   const {
     isPlacingDecal,
     decalPosition,
     decalRotation,
     decalScale,
+    setDecalPosition,
+    setDecalScale,
     handlePointerDown,
     handlePointerEnter,
     handlePointerOut,
   } = useDecal({ scaleFactor: controls.scaleFactor });
 
+  // Debug laser
+  const {rayOrigin, setRayOrigin, rayDirection, setRayDirection} = useDebugLaser() // prettier-ignore
+
+  // Filter
+  const { filter, setFilter } = useFilter();
+
+  useEffect(() => {
+    setFilter((prev) => ({
+      ...prev,
+      decal: {
+        ...prev.decal,
+        scale: decalScale,
+        position: decalPosition,
+      },
+    }));
+  }, [setFilter, decalPosition, decalScale]);
+
   return (
     <>
-      {!isPlacingDecal ? <OrbitControls /> : null}
-      <mesh
-        onPointerEnter={handlePointerEnter}
-        onPointerOut={handlePointerOut}
-        onPointerDown={(e: ThreeEvent<PointerEvent>) => handlePointerDown(e)} /* prettier-ignore */
-      >
-        {geometryMap[controls.Primitives as Primitives]}
-        <meshBasicMaterial />
+      {isPlacingDecal ? (
+        <DebugLaser
+          rayOrigin={[rayOrigin.x, rayOrigin.y, rayOrigin.z]}
+          rayDirection={[rayDirection.x, rayDirection.y, rayDirection.z]}
+        />
+      ) : (
+        <OrbitControls />
+      )}
 
-        {isPlacingDecal || controls.show ? (
-          <Decal
-            scale={decalScale}
-            position={[decalPosition.x, decalPosition.y, decalPosition.z]}
-            rotation={[decalRotation.x, decalRotation.y, decalRotation.z]}
-            debug={controls.debug}
-          >
-            <meshStandardMaterial
-              map={texture}
-              transparent={true}
-              polygonOffset
-              polygonOffsetFactor={-1}
-            />
-          </Decal>
-        ) : null}
-      </mesh>
+      {controls.showMesh ? (
+        <mesh
+          onPointerEnter={handlePointerEnter}
+          onPointerOut={handlePointerOut}
+          onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+          handlePointerDown(e);
+          setRayDirection(e.ray.direction);
+          setRayOrigin(e.ray.origin);
+      }} /* prettier-ignore */
+        >
+          {geometryMap[controls.Primitives as Primitives]}
+          <meshBasicMaterial />
+          <CustomDecal
+            scale={filter.decal.scale}
+            position={filter.decal.position}
+          />
+        </mesh>
+      ) : null}
     </>
   );
 }
