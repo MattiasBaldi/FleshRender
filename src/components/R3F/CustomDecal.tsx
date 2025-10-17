@@ -13,22 +13,26 @@ export function CustomDecal(props: DecalProps) {
   const image = useUiStore((state) => state.texture);
   const texture = useTexture(image);
 
-  const controls = useControls(`decal ${image}`, {
-    scale: {
-      value: { x: 1, y: 1, z: 1 },
-      min: 0,
-      max: 10,
-      step: 0.1,
+  const controls = useControls(
+    `decal ${image}`,
+    {
+      scale: {
+        value: { x: 1, y: 1, z: 1 },
+        min: 0,
+        max: 10,
+        step: 0.1,
+      },
+      rotation: {
+        value: { x: 1, y: 1, z: 1 },
+        min: 0,
+        max: 360,
+        step: 10,
+      },
+      showDecal: true,
+      debug: false,
     },
-    rotation: {
-      value: { x: 1, y: 1, z: 1 },
-      min: 0,
-      max: 360,
-      step: 10,
-    },
-    showDecal: true,
-    debug: false,
-  });
+    { collapsed: true }
+  );
 
   return (
     <Decal

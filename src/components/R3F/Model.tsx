@@ -13,10 +13,19 @@ export enum Models {
 export function Model() {
   // Model
   const { nodes } = useGLTF("./src/assets/models/models.glb");
-  const controls = useControls("mesh", {
-    showMesh: true,
-    Models: { options: Models, value: Models.male },
-  });
+
+  const controls = useControls(
+    "mesh",
+    {
+      scale: { value: 1, min: 0.1, max: 5, step: 0.1 },
+      showMesh: true,
+      flipY: true,
+      receieveShadow: true,
+      castShadow: true,
+      Models: { options: Models, value: Models.male },
+    },
+    { collapsed: true }
+  );
 
   // Filter
   const { filter, setFilter } = useFilter();
@@ -27,6 +36,9 @@ export function Model() {
       {/* model */}
       {controls.showMesh && (
         <mesh
+          scale={controls.scale}
+          receiveShadow={controls.receieveShadow}
+          castShadow={controls.castShadow}
           onPointerEnter={handlePointerEnter}
           onPointerOut={handlePointerOut}
           onPointerDown={(e: ThreeEvent<PointerEvent>) => {handlePointerDown(e)}} // prettier-ignore

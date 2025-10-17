@@ -29,17 +29,17 @@ export const decalsSchema = z.array(decalSchema);
 export type Decal = z.infer<typeof decalSchema>;
 export type Decals = z.infer<typeof decalsSchema>;
 
-// const defaultSchema = [
-//   {
-//     id: "test",
-//     scale: 1,
-//     position: { x: 1, y: 1, z: 1 }, // fixed typo
-//   },
-// ];
+const defaultSchema = [
+  {
+    id: "test",
+    scale: 1,
+    position: { x: 1, y: 1, z: 1 }, // fixed typo
+  },
+];
 
 // nuqs schema
 export const nuqsSchema = {
-  decals: parseAsJson(decalsSchema).withDefault([]),
+  decals: parseAsJson(decalsSchema).withDefault(defaultSchema),
   activeDecal: parseAsInteger.withDefault(0),
   isDecalPlacing: parseAsBoolean.withDefault(false),
   scaleFactor: parseAsFloat.withDefault(0.01),
@@ -56,29 +56,12 @@ export type NuqsFilter = {
 export function useFilter() {
   const [filter, setFilter] = useQueryStates(nuqsSchema, {clearOnDefault: false, }); // prettier-ignore
   const serialize = createSerializer(nuqsSchema);
+
   return { filter, setFilter, serialize };
 }
 
-// **** API ***
-
-// Input
-// const quantity = "cups"
-// const Spices =
-// {
-//   chili: 2,
-//   oregano: 3
-// }
-
-// // // logic
-// const spices.thyme = new Spice("thyme", 20) // Adding new spices
-// spices.optimize() // Optimizing the bottle
-// const link = serialize(spices) // Generating a link
-
-// Output www.spicemyway.com/?spices={[chili: 20, turmeric: 10...]}
-
 /*
 !!!!!!!!!!! FROM THE NUQS DOCS !!!!!!!!!!!!!!!
-
 
 Serializer helper
 Introduced in version 1.16.0.
@@ -87,7 +70,6 @@ To populate <Link> components with state values, you can use the createSerialize
 Pass it an object describing your search params, and it will give you a function to call with values, that generates a query string serialized as the hooks would do.
 
 Example:
-
 
 import {
   createSerializer,

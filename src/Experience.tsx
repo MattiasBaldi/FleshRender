@@ -5,20 +5,24 @@ import { useDecalsStore } from "./stores/useDecalsStore.ts";
 import { Suspense } from "react";
 import { ModelFallback } from "./components/R3F/ModelFallback.tsx";
 import { useFilter } from "./hooks/useFilter.ts";
+import { LightsAndShadows } from "./components/R3F/LightsAndShadows.tsx";
+import { PostProcessing } from "./components/R3F/PostProcessing.tsx";
 
 export default function Experience() {
   const isDecalPlacing = useDecalsStore((state) => state.isDecalPlacing);
 
-  const { filter, setFilter } = useFilter();
-
   return (
     <>
-      <Environment preset="city" />
-      {!filter.isDecalPlacing && <OrbitControls />}
+      {!isDecalPlacing && <OrbitControls />}
+      <Environment preset="city" backgroundBlurriness={10} />
+      {/* <PostProcessing /> */}
 
-      <Suspense fallback={<ModelFallback />}>
-        <Model />
-      </Suspense>
+      <group>
+        <LightsAndShadows />
+        <Suspense fallback={<ModelFallback />}>
+          <Model />
+        </Suspense>
+      </group>
     </>
   );
 }
