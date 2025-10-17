@@ -3,20 +3,29 @@ import { create } from "zustand";
 export type DecalsStore = {
   isDecalPlacing: boolean;
   scaleFactor: number;
+  activeDecalId: string;
 
-  setIsDecalPlacing: (isActive: boolean) => void;
+  setIsDecalPlacing: (isDecalPlacing: boolean) => void;
   setScaleFactor: (scaleFactor: number) => void;
+  setActiveDecalId: (activeDecalId: string) => void;
 };
 
 export const useDecalsStore = create<DecalsStore>((set) => ({
+  // defaults
   isDecalPlacing: false,
   scaleFactor: 1.0,
+  activeDecalId: "",
 
+  // setters
   setIsDecalPlacing: (isDecalPlacing: boolean) => {
-    set({ isDecalPlacing: isDecalPlacing });
+    set({ isDecalPlacing });
   },
 
   setScaleFactor: (scaleFactor: number) => {
-    set({ scaleFactor: scaleFactor });
+    set({ scaleFactor });
+  },
+
+  setActiveDecalId: (activeDecalId: string) => {
+    set({ activeDecalId });
   },
 }));

@@ -4,14 +4,17 @@ import { Model } from "./components/R3F/Model.tsx";
 import { useDecalsStore } from "./stores/useDecalsStore.ts";
 import { Suspense } from "react";
 import { ModelFallback } from "./components/R3F/ModelFallback.tsx";
+import { useFilter } from "./hooks/useFilter.ts";
 
 export default function Experience() {
   const isDecalPlacing = useDecalsStore((state) => state.isDecalPlacing);
 
+  const { filter, setFilter } = useFilter();
+
   return (
     <>
       <Environment preset="city" />
-      {!isDecalPlacing && <OrbitControls />}
+      {!filter.isDecalPlacing && <OrbitControls />}
 
       <Suspense fallback={<ModelFallback />}>
         <Model />

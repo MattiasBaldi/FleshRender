@@ -1,30 +1,56 @@
 import { z } from "zod";
-import { parseAsJson, createSerializer, useQueryStates } from "nuqs";
+import {
+  parseAsJson,
+  parseAsFloat,
+  parseAsBoolean,
+  createSerializer,
+  useQueryStates,
+  parseAsInteger,
+} from "nuqs";
 
 export const vectorNumber = z.number().default(1);
-
 export const vectorSchema = z.object({
   x: vectorNumber,
   y: vectorNumber,
-  z: vectorNumber,
+  z: vectorNumber.transform(Math.floor),
 });
 
+// One decal
 export const decalSchema = z.object({
+  id: z.string(),
   scale: z.number().min(0).default(1),
   position: vectorSchema,
 });
 
-export const defaultFilter: Decal = {
-  scale: 1,
-  position: { x: 1, y: 1, z: 1 },
-};
-
-export const nuqsSchema = {
-  decal: parseAsJson(decalSchema).withDefault(defaultFilter),
-};
+// All decals
+export const decalsSchema = z.array(decalSchema);
 
 // TS Types
 export type Decal = z.infer<typeof decalSchema>;
+export type Decals = z.infer<typeof decalsSchema>;
+
+// const defaultSchema = [
+//   {
+//     id: "test",
+//     scale: 1,
+//     position: { x: 1, y: 1, z: 1 }, // fixed typo
+//   },
+// ];
+
+// nuqs schema
+export const nuqsSchema = {
+  decals: parseAsJson(decalsSchema).withDefault([]),
+  activeDecal: parseAsInteger.withDefault(0),
+  isDecalPlacing: parseAsBoolean.withDefault(false),
+  scaleFactor: parseAsFloat.withDefault(0.01),
+};
+
+export type NuqsFilter = {
+  decals: Decals;
+  activeDecal: number;
+  isDecalPlacing: boolean; // maybe - better locally
+  scaleFactor: number; // maybe - better locally
+};
 
 // parse means, only read in this specific format
 export function useFilter() {
@@ -32,6 +58,23 @@ export function useFilter() {
   const serialize = createSerializer(nuqsSchema);
   return { filter, setFilter, serialize };
 }
+
+// **** API ***
+
+// Input
+// const quantity = "cups"
+// const Spices =
+// {
+//   chili: 2,
+//   oregano: 3
+// }
+
+// // // logic
+// const spices.thyme = new Spice("thyme", 20) // Adding new spices
+// spices.optimize() // Optimizing the bottle
+// const link = serialize(spices) // Generating a link
+
+// Output www.spicemyway.com/?spices={[chili: 20, turmeric: 10...]}
 
 /*
 !!!!!!!!!!! FROM THE NUQS DOCS !!!!!!!!!!!!!!!

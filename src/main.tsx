@@ -29,6 +29,17 @@ Sentry.init({
   ],
   replaysSessionSampleRate: 1.0,
   replaysOnErrorSampleRate: 1.0,
+
+  // <-- Add this to block localhost errors
+  beforeSend(event) {
+    if (
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+    ) {
+      return null; // drop event
+    }
+    return event;
+  },
 });
 
 createRoot(document.getElementById("root")!).render(
