@@ -2,11 +2,13 @@ import { Decal, useTexture } from "@react-three/drei"; // prettier-ignore
 import { useUiStore } from "../../stores/useUiStore.ts";
 import { useControls } from "leva";
 import type { DecalVector } from "../../hooks/useDecal.ts";
+import * as THREE from "three";
 
 export type DecalProps = {
   scale?: DecalVector | number;
   rotation?: DecalVector;
   position?: DecalVector;
+  mesh: THREE.Mesh;
 };
 
 export function CustomDecal(props: DecalProps) {
@@ -36,6 +38,7 @@ export function CustomDecal(props: DecalProps) {
 
   return (
     <Decal
+      mesh={props.mesh}
       scale={props.scale}
       position={[props.position.x, props.position.y, props.position.z]}
       rotation={[controls.rotation.x, controls.rotation.y, controls.rotation.z]}

@@ -4,28 +4,33 @@ import { useFilter } from "../../hooks/useFilter.ts";
 import { CustomDecal } from "./CustomDecal.tsx";
 import { useGLTF } from "@react-three/drei";
 import { useDecal } from "../../hooks/useDecal.ts";
+import * as THREE from "three";
 
-export enum Models {
-  male = "male",
-  female = "female",
+export const enum Models {
+  MaleLocomotion = "male_locomotion",
+  MaleDynamic = "male_dynamic",
+  MaleRest = "male_rest",
+  FemaleLocomotion = "female_locomotion",
+  FemaleDynamic = "female_dynamic",
+  FemaleRest = "female_rest",
 }
 
 export function Model() {
-  // Model
-  const { nodes } = useGLTF("./src/assets/models/models.glb");
-
   const controls = useControls(
     "mesh",
     {
-      scale: { value: 1, min: 0.1, max: 5, step: 0.1 },
       showMesh: true,
-      flipY: true,
+      scale: { value: 1, min: 0.1, max: 10, step: 0.1 },
       receieveShadow: true,
       castShadow: true,
-      Models: { options: Models, value: Models.male },
+      models: { options: Models, value: Models.MaleRest },
     },
-    { collapsed: true }
+    { collapsed: false }
   );
+
+  // Model
+  const model  = useGLTF(`./src/assets/models/${controls.models}.glb`); // prettier-ignore
+  const mesh = model.scene.getObjectByName(controls.models) as THREE.SkinnedMesh; // prettier-ignore
 
   // Filter
   const { filter, setFilter } = useFilter();
@@ -35,25 +40,28 @@ export function Model() {
     <>
       {/* model */}
       {controls.showMesh && (
-        <mesh
-          scale={controls.scale}
-          receiveShadow={controls.receieveShadow}
-          castShadow={controls.castShadow}
-          onPointerEnter={handlePointerEnter}
-          onPointerOut={handlePointerOut}
-          onPointerDown={(e: ThreeEvent<PointerEvent>) => {handlePointerDown(e)}} // prettier-ignore
-          geometry={nodes[controls.Models].geometry}
-          material={nodes[controls.Models].material}
-        >
-          {filter.decals &&
-            filter.decals.map((decal) => (
-              <CustomDecal
-                key={decal.id}
-                scale={decal.scale}
-                position={decal.position}
-              />
-            ))}
-        </mesh>
+        <group>
+          <mesh
+            rotation={[(90 * Math.PI) / 180, 0, 0]}
+            scale={controls.scale}
+            receiveShadow={controls.receieveShadow}
+            castShadow={controls.castShadow}
+            onPointerEnter={handlePointerEnter}
+            onPointerOut={handlePointerOut}
+            onPointerDown={(e: ThreeEvent<PointerEvent>) => {handlePointerDown(e)}} // prettier-ignore
+            geometry={mesh.geometry}
+            material={mesh.material}
+          >
+            {filter.decals &&
+              filter.decals.map((decal) => (
+                <CustomDecal
+                  key={decal.id}
+                  scale={decal.scale}
+                  position={decal.position}
+                />
+              ))}
+          </mesh>
+        </group>
       )}
     </>
   );

@@ -3,8 +3,11 @@ import Experience from "./Experience.tsx";
 import { Ui } from "./components/UI/Ui.tsx";
 import { Perf } from "r3f-perf";
 import { Leva } from "leva";
+import { useState } from "react";
 
 function App() {
+  const [background, setBackground] = useState<string>("grey");
+
   return (
     <>
       <Canvas
@@ -14,13 +17,13 @@ function App() {
         style={{
           width: "100vw",
           height: "100vh",
-          background: "grey",
+          background: background,
         }}
       >
-        <Experience />
+        <Experience setBackground={setBackground} />
         <Perf position="bottom-right" />
       </Canvas>
-      {/* <Ui /> */}
+      <Ui />
       <Leva collapsed={true} />
     </>
   );

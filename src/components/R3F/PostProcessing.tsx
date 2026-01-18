@@ -17,7 +17,7 @@ export function PostProcessing() {
 
   return (
     <EffectComposer>
-      {/* <Bloom></Bloom> */}
+      <Bloom intensity={1} mipapBlur></Bloom>
 
       <ToneMapping mode={controls.ToneMapping} />
     </EffectComposer>

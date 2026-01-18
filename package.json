@@ -15,6 +15,7 @@
     "@react-three/postprocessing": "^3.0.4",
     "@sentry/react": "^10.19.0",
     "@sentry/vite-plugin": "^4.4.0",
+    "@tailwindcss/oxide": "^4.1.14",
     "@tailwindcss/vite": "^4.1.14",
     "leva": "^0.10.0",
     "nuqs": "^2.7.2",

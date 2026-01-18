@@ -41,6 +41,7 @@ export function useDecal({ filter, setFilter }: UseDecalProps) {
       }));
       setCursorStyle(CursorStyle.grabbing);
       setDecalOrigin({ x: Math.abs(e.clientX), y: Math.abs(e.clientY) });
+      setFilter((prev) => ({ ...prev, isDecalPlacing: true }));
     },
     [setCursorStyle, setFilter]
   );
